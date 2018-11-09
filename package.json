@@ -1,0 +1,18 @@
+{
+  "name": "@nzakas/ordered-set",
+  "version": "0.1.0",
+  "description": "A set whose items can be traversed in order",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint src/ tests/",
+    "test": "npm run lint && mocha tests/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^5.8.0",
+    "mocha": "^5.2.0"
+  }
+}
