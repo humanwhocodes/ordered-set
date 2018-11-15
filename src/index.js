@@ -5,13 +5,31 @@
 
 "use strict";
 
-const FIRST = { toString() { return "FIRST" } };
-const LAST = { toString() { return "LAST" } };
-
+// hidden fields on the class
 const first = Symbol("first");
 const last = Symbol("last");
 const nexts = Symbol("nexts");
 const prevs = Symbol("prevs");
+
+function assertValidItem(item) {
+    if (item == null) {
+        throw new TypeError("Key cannot be null or undefined.");
+    }
+}
+
+function assertNoDuplicates(item, set) {
+    if (set.has(item)) {
+        throw new Error("Duplicate item.");
+    }
+}
+
+function assertExists(item, set) {
+    if (!set.has(item)) {
+        throw new Error(`Item '${item}' does not exist.`);
+    }
+}
+
+
 
 class OrderedSet {
 
@@ -22,7 +40,6 @@ class OrderedSet {
         this[first] = undefined;
         this[last] = undefined;
     }
-
 
     next(item) {
         return this[nexts].get(item);
@@ -38,15 +55,8 @@ class OrderedSet {
 
     add(item) {
 
-        // ensure no duplicates
-        if (this.has(item)) {
-            throw new Error("Duplicate item.");
-        }
-
-        // undefined is used as a special value, so can't be a key
-        if (item === undefined) {
-            throw new Error("Item must not be undefined.");
-        }
+        assertValidItem(item);
+        assertNoDuplicates(item, this);
 
         // special case for first item
         if (this[first] === undefined) {
@@ -65,15 +75,9 @@ class OrderedSet {
 
     insertAfter(item, relatedItem) {
 
-        // ensure no duplicates
-        if (this.has(item)) {
-            throw new Error("Duplicate item.");
-        }
-
-        // check for missing data
-        if (!this[nexts].has(relatedItem)) {
-            throw new Error("Second argument not found in set.");
-        }
+        assertValidItem(item);
+        assertNoDuplicates(item, this);
+        assertExists(relatedItem, this);
 
         const curNext = this.next(relatedItem);
         this[nexts].set(relatedItem, item);
@@ -87,16 +91,73 @@ class OrderedSet {
         }
     }
 
+    insertBefore(item, relatedItem) {
+
+        assertValidItem(item);
+        assertNoDuplicates(item, this);
+        assertExists(relatedItem, this);
+
+        const curPrev = this.previous(relatedItem);
+        this[prevs].set(relatedItem, item);
+        this[prevs].set(item, curPrev);
+        this[nexts].set(item, relatedItem);
+        
+        // special case: relatedItem is the first item
+        if (relatedItem === this[first]) {
+            this[first] = item;
+        } else {
+            this[nexts].set(curPrev, item);
+        }
+    }
+
+    remove(item) {
+
+        assertValidItem(item);
+        assertExists(item, this);
+
+        const curPrev = this.previous(item);
+        const curNext = this.next(item);
+
+        if (curPrev !== undefined) {
+            this[nexts].set(curPrev, curNext);
+        }
+
+        if (curNext !== undefined) {
+            this[prevs].set(curNext, curPrev);
+        }
+
+        this[prevs].remove(item);
+        this[nexts].remove(item);
+    }
+
     get size() {
         return this[nexts].size;
+    }
+
+    first() {
+        return this[first]; 
+    }
+
+    last() {
+        return this[last]; 
     }
 
     *[Symbol.iterator]() {
 
         let item = this[first];
+        
         while (item) {
             yield item;
             item = this.next(item);
+        }
+    }
+
+    *reverse() {
+        let item = this[last];
+
+        while (item) {
+            yield item;
+            item = this.previous(item);
         }
     }
 
