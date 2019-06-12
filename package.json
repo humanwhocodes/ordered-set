@@ -2,7 +2,7 @@
   "name": "@humanwhocodes/ordered-set",
   "version": "0.1.0",
   "description": "A set whose items can be traversed in order",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "lint": "eslint src/ tests/",
     "test": "npm run lint && mocha tests/"
