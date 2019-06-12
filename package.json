@@ -1,5 +1,5 @@
 {
-  "name": "@nzakas/ordered-set",
+  "name": "@humanwhocodes/ordered-set",
   "version": "0.1.0",
   "description": "A set whose items can be traversed in order",
   "main": "index.js",
@@ -8,8 +8,8 @@
     "test": "npm run lint && mocha tests/"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "nzakas",
+  "license": "Apache-2.0",
   "devDependencies": {
     "chai": "^4.2.0",
     "eslint": "^5.8.0",

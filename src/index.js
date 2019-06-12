@@ -1,5 +1,5 @@
 /**
- * Ordered Weak Set object
+ * Ordered Set object
  * @author Nicholas C. Zakas
  */
 
@@ -11,7 +11,7 @@ const last = Symbol("last");
 const nexts = Symbol("nexts");
 const prevs = Symbol("prevs");
 
-function assertValidItem(item) {
+function assertValidValue(item) {
     if (item == null) {
         throw new TypeError("Key cannot be null or undefined.");
     }
@@ -30,94 +30,184 @@ function assertExists(item, set) {
 }
 
 
-
+/**
+ * Represents a list of unique values that can be accessed in order.
+ */
 class OrderedSet {
 
+    /**
+     * Creates a new instance.
+     */
     constructor() {
+
+        /**
+         * Tracks the values that come after any given value.
+         * @property nexts
+         * @type Map
+         * @private
+         */
         this[nexts] = new Map();
+
+        /**
+         * Tracks the values that come before any given value.
+         * @property prevs
+         * @type Map
+         * @private
+         */
         this[prevs] = new Map();
 
+        /**
+         * Pointer to the first value in the set.
+         * @property first
+         * @type Map
+         * @private
+         */
         this[first] = undefined;
+
+        /**
+         * Pointer to the last value in the set.
+         * @property last
+         * @type Map
+         * @private
+         */
         this[last] = undefined;
     }
 
-    next(item) {
-        return this[nexts].get(item);
+    /**
+     * Returns the value that comes after the given value in the set.
+     * @param {*} value The item to get the next value for.
+     * @returns {*} The value that comes immediately after the given value or
+     *      `undefined` if no such value exists. 
+     */
+    next(value) {
+        return this[nexts].get(value);
     }
 
-    previous(item) {
-        return this[prevs].get(item);
+    /**
+     * Returns the value that comes before the given value in the set.
+     * @param {*} value The item to get the previous value for.
+     * @returns {*} The value that comes immediately before the given value or
+     *      `undefined` if no such value exists.
+     */
+    previous(value) {
+        return this[prevs].get(value);
     }
 
-    has(item) {
-        return this[nexts].has(item);
+    /**
+     * Determines if the given value exists in the set.
+     * @param {*} value The value to check for.
+     * @returns {boolean} True if the value is found in the set, false if not. 
+     */
+    has(value) {
+        return this[nexts].has(value);
     }
 
-    add(item) {
+    /**
+     * Adds a new value to the end of the set.
+     * @param {*} value The value to add into the set.
+     * @returns {void} 
+     */
+    add(value) {
 
-        assertValidItem(item);
-        assertNoDuplicates(item, this);
+        assertValidValue(value);
+        assertNoDuplicates(value, this);
 
         // special case for first item
         if (this[first] === undefined) {
-            this[first] = item;
-            this[last] = item;
-            this[nexts].set(item, undefined);
-            this[prevs].set(item, undefined);
+            this[first] = value;
+            this[last] = value;
+            this[nexts].set(value, undefined);
+            this[prevs].set(value, undefined);
         } else {
-            this[nexts].set(this[last], item);
-            this[nexts].set(item, undefined);
-            this[prevs].set(item, this[last]);
-            this[last] = item;
+            this[nexts].set(this[last], value);
+            this[nexts].set(value, undefined);
+            this[prevs].set(value, this[last]);
+            this[last] = value;
         }
 
     }
 
-    insertAfter(item, relatedItem) {
+    /**
+     * Inserts a value after a given value that already exists in the set.
+     * @param {*} value The value to insert.
+     * @param {*} relatedValue The value after which to insert the new value.
+     * @returns {void}
+     * @throws {Error} If `value` is an invalid value for the set.
+     * @throws {Error} If `value` already exists in the set.
+     * @throws {Error} If `relatedValue` does not exist in the set.
+     */
+    insertAfter(value, relatedValue) {
 
-        assertValidItem(item);
-        assertNoDuplicates(item, this);
-        assertExists(relatedItem, this);
+        assertValidValue(value);
+        assertNoDuplicates(value, this);
+        assertExists(relatedValue, this);
 
-        const curNext = this.next(relatedItem);
-        this[nexts].set(relatedItem, item);
-        this[nexts].set(item, curNext);
-        this[prevs].set(curNext, item);
-        this[prevs].set(item, relatedItem);
+        const curNext = this.next(relatedValue);
+        this[nexts].set(relatedValue, value);
+        this[nexts].set(value, curNext);
+        this[prevs].set(curNext, value);
+        this[prevs].set(value, relatedValue);
 
         // special case: relatedItem is the last item
-        if (relatedItem === this[last]) {
-            this[last] = item;
+        if (relatedValue === this[last]) {
+            this[last] = value;
         }
     }
 
-    insertBefore(item, relatedItem) {
+    /**
+     * Inserts a value before a given value that already exists in the set.
+     * @param {*} value The value to insert.
+     * @param {*} relatedValue The value before which to insert the new value.
+     * @returns {void}
+     * @throws {Error} If `value` is an invalid value for the set.
+     * @throws {Error} If `value` already exists in the set.
+     * @throws {Error} If `relatedValue` does not exist in the set.
+     */
+    insertBefore(value, relatedValue) {
 
-        assertValidItem(item);
-        assertNoDuplicates(item, this);
-        assertExists(relatedItem, this);
+        assertValidValue(value);
+        assertNoDuplicates(value, this);
+        assertExists(relatedValue, this);
 
-        const curPrev = this.previous(relatedItem);
-        this[prevs].set(relatedItem, item);
-        this[prevs].set(item, curPrev);
-        this[nexts].set(item, relatedItem);
+        const curPrev = this.previous(relatedValue);
+        this[prevs].set(relatedValue, value);
+        this[prevs].set(value, curPrev);
+        this[nexts].set(value, relatedValue);
         
         // special case: relatedItem is the first item
-        if (relatedItem === this[first]) {
-            this[first] = item;
+        if (relatedValue === this[first]) {
+            this[first] = value;
         } else {
-            this[nexts].set(curPrev, item);
+            this[nexts].set(curPrev, value);
         }
     }
 
-    remove(item) {
+    /**
+     * Removes a value from the set while ensuring the order remains correct.
+     * @param {*} value The value to remove from the set.
+     * @returns {void}
+     * @throws {Error} If `value` is an invalid value for the set.
+     * @throws {Error} If `value` already exists in the set.
+     */
+    delete(value) {
 
-        assertValidItem(item);
-        assertExists(item, this);
+        assertValidValue(value);
+        assertExists(value, this);
 
-        const curPrev = this.previous(item);
-        const curNext = this.next(item);
+        // get the items currently before and after
+        const curPrev = this.previous(value);
+        const curNext = this.next(value);
 
+        // check the list first and last pointers
+        if (this[first] === value) {
+            this[first] = curNext;
+        }
+
+        if (this[last] === value) {
+            this[last] = curPrev;
+        }
+
+        // arrange pointers to skip over the item to remove
         if (curPrev !== undefined) {
             this[nexts].set(curPrev, curNext);
         }
@@ -126,23 +216,48 @@ class OrderedSet {
             this[prevs].set(curNext, curPrev);
         }
 
-        this[prevs].remove(item);
-        this[nexts].remove(item);
+        // officially remove the item
+        this[prevs].delete(value);
+        this[nexts].delete(value);
     }
 
+    /**
+     * Returns the number of values in the set.
+     * @returns {int} The numbet of values in the set.
+     */
     get size() {
         return this[nexts].size;
     }
 
+    /**
+     * Returns the first value in the set.
+     * @returns {*} The first value in the set or `undefined` for an empty set.
+     */
     first() {
         return this[first]; 
     }
 
+    /**
+     * Returns the last value in the set.
+     * @returns {*} The last value in the set or `undefined` for an empty set.
+     */
     last() {
         return this[last]; 
     }
 
-    *[Symbol.iterator]() {
+    /**
+     * Returns the default iterator for the set.
+     * @returns {Iterator} The default iterator for the set.
+     */
+    [Symbol.iterator]() {
+        return this.values();
+    }
+
+    /**
+     * Returns an iterator over all of the values in the set.
+     * @returns {Iterator} An iterator for the set.
+     */
+    *values() {
 
         let item = this[first];
         
@@ -152,6 +267,10 @@ class OrderedSet {
         }
     }
 
+    /**
+     * Returns an iterator over all of the values in the set going in reverse.
+     * @returns {Iterator} An iterator for the set.
+     */
     *reverse() {
         let item = this[last];
 
