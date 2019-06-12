@@ -143,7 +143,7 @@ describe("OrderedSet", () => {
             
             assert.throws(() => {
                 set.delete("a");
-            }, /null or undefined/);
+            }, /Item 'a' does not exist/);
         });
     });
 

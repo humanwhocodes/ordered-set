@@ -11,21 +11,41 @@ const last = Symbol("last");
 const nexts = Symbol("nexts");
 const prevs = Symbol("prevs");
 
-function assertValidValue(item) {
-    if (item == null) {
+/**
+ * Determines if the given value is valid for the set.
+ * @param {*} value The value to check.
+ * @returns {void}
+ * @throws {Error} If the value is `null` or `undefined`. 
+ */
+function assertValidValue(value) {
+    if (value == null) {
         throw new TypeError("Key cannot be null or undefined.");
     }
 }
 
-function assertNoDuplicates(item, set) {
-    if (set.has(item)) {
-        throw new Error("Duplicate item.");
+/**
+ * Checks to see if a value already exists in the given map.
+ * @param {*} value The value to check. 
+ * @param {OrderedSet} set The set to check inside of.
+ * @returns {void}
+ * @throws {Error} If the value is a duplicate.
+ */
+function assertNoDuplicates(value, set) {
+    if (set.has(value)) {
+        throw new Error(`The value '${ value }' already exists in the set.`);
     }
 }
 
-function assertExists(item, set) {
-    if (!set.has(item)) {
-        throw new Error(`Item '${item}' does not exist.`);
+/**
+ * Determines if the given value already exists in the set.
+ * @param {*} value The value to check for. 
+ * @param {OrderedSet} set The map to check inside of.
+ * @returns {void}
+ * @throws {Error} If the value doesn't exist.
+ */
+function assertExists(value, set) {
+    if (!set.has(value)) {
+        throw new Error(`Item '${value}' does not exist.`);
     }
 }
 
