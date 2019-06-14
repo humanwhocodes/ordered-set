@@ -45,7 +45,7 @@ function assertNoDuplicates(value, set) {
  */
 function assertExists(value, set) {
     if (!set.has(value)) {
-        throw new Error(`Item '${value}' does not exist.`);
+        throw new Error(`The value '${value}' does not exist.`);
     }
 }
 
@@ -101,6 +101,56 @@ class OrderedSet {
      */
     next(value) {
         return this[nexts].get(value);
+    }
+
+    /**
+     * Searches forward in the set to find the first value that matches.
+     * @param {Function} matcher The function to run on each value. The
+     *      function must return `true` when the value matches. 
+     * @param {*} start The value to start searching from.
+     * @returns {*} The first matching value or `undefined` if no matches
+     *      are found. 
+     */
+    findNext(matcher, start) {
+
+        assertExists(start, this);
+
+        let current = this.next(start);
+
+        while (current) {
+            if (matcher(current)) {
+                return current;
+            }
+
+            current = this.next(current);
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Searches backward in the set to find the first value that matches.
+     * @param {Function} matcher The function to run on each value. The
+     *      function must return `true` when the value matches. 
+     * @param {*} start The value to start searching from.
+     * @returns {*} The first matching value or `undefined` if no matches
+     *      are found. 
+     */
+    findPrevious(matcher, start) {
+
+        assertExists(start, this);
+
+        let current = this.previous(start);
+
+        while (current) {
+            if (matcher(current)) {
+                return current;
+            }
+
+            current = this.previous(current);
+        }
+
+        return undefined;
     }
 
     /**

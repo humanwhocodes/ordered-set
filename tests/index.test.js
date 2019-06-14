@@ -42,11 +42,15 @@ describe("OrderedSet", () => {
     const item ="a";
     const item2 = "b";
     const item3 = "c";
+    let set;
+
+    beforeEach(() => {
+        set = new OrderedSet();
+    });
 
     describe("add()", () => {
 
         it("adds a new item when passed one item", () => {
-            const set = new OrderedSet();
             const result = [item];
 
             set.add(item);
@@ -55,7 +59,6 @@ describe("OrderedSet", () => {
         });
         
         it("adds new items when passed multiple items", () => {
-            const set = new OrderedSet();
             const result = [item, item2, item3];
 
             set.add(item);
@@ -66,28 +69,46 @@ describe("OrderedSet", () => {
         });
 
         it("throws an error when undefined is passed", () => {
-            const set = new OrderedSet();
-
-            
             assert.throws(() => {
                 set.add(undefined);
             }, /null or undefined/);
         });
 
         it("throws an error when null is passed", () => {
-            const set = new OrderedSet();
-
-            
             assert.throws(() => {
                 set.add(null);
             }, /null or undefined/);
+        });
+
+        it("throws an error when a duplicate value is passed", () => {
+            set.add(1);
+            assert.throws(() => {
+                set.add(1);
+            }, /already exists/);
+        });
+    });
+
+    describe("has()", () => {
+        it("should return false when the set is empty", () => {
+            assert.isFalse(set.has(2));
+        });
+
+        it("should return false when the value isn't found", () => {
+            set.add(1);
+
+            assert.isFalse(set.has(2));
+        });
+
+        it("should return true when the value is found", () => {
+            set.add(1);
+
+            assert.isTrue(set.has(1));
         });
     });
 
     describe("delete()", () => {
 
         it("removes an item from a one-item list", () => {
-            const set = new OrderedSet();
             const result = [];
 
             set.add(item);
@@ -97,7 +118,6 @@ describe("OrderedSet", () => {
         });
         
         it("removes an item from the middle of a list", () => {
-            const set = new OrderedSet();
             const result = [item, item3];
 
             set.add(item);
@@ -110,7 +130,6 @@ describe("OrderedSet", () => {
         });
 
         it("removes an item from the end of a list", () => {
-            const set = new OrderedSet();
             const result = [item, item2];
 
             set.add(item);
@@ -123,34 +142,27 @@ describe("OrderedSet", () => {
         });
 
         it("throws an error when undefined is passed", () => {
-            const set = new OrderedSet();
-
             assert.throws(() => {
                 set.delete(undefined);
             }, /null or undefined/);
         });
 
         it("throws an error when null is passed", () => {
-            const set = new OrderedSet();
-            
             assert.throws(() => {
                 set.delete(null);
             }, /null or undefined/);
         });
 
         it("throws an error when a value not in the set is passed", () => {
-            const set = new OrderedSet();
-            
             assert.throws(() => {
                 set.delete("a");
-            }, /Item 'a' does not exist/);
+            }, /The value 'a' does not exist/);
         });
     });
 
     describe("insertBefore()", () => {
 
         it("inserts an item at the start", () => {
-            const set = new OrderedSet();
             const result = [item2, item];
 
             set.add(item);
@@ -160,7 +172,6 @@ describe("OrderedSet", () => {
         });
         
         it("inserts an item in the middle", () => {
-            const set = new OrderedSet();
             const result = [item, item2, item3];
 
             set.add(item);
@@ -171,8 +182,6 @@ describe("OrderedSet", () => {
         });
 
         it("throws an error when undefined is passed", () => {
-            const set = new OrderedSet();
-
             set.add(item);
 
             assert.throws(() => {
@@ -181,8 +190,6 @@ describe("OrderedSet", () => {
         });
 
         it("throws an error when null is passed", () => {
-            const set = new OrderedSet();
-
             set.add(item);
 
             assert.throws(() => {
@@ -194,7 +201,6 @@ describe("OrderedSet", () => {
     describe("insertAfter()", () => {
 
         it("inserts an item in the middle", () => {
-            const set = new OrderedSet();
             const result = [item, item2, item3];
 
             set.add(item);
@@ -205,7 +211,6 @@ describe("OrderedSet", () => {
         });
 
         it("inserts an item at the end", () => {
-            const set = new OrderedSet();
             const result = [item, item2];
 
             set.add(item);
@@ -215,8 +220,6 @@ describe("OrderedSet", () => {
         });
 
         it("throws an error when undefined is passed", () => {
-            const set = new OrderedSet();
-
             set.add(item);
 
             assert.throws(() => {
@@ -225,14 +228,80 @@ describe("OrderedSet", () => {
         });
 
         it("throws an error when null is passed", () => {
-            const set = new OrderedSet();
-
             set.add(item);
 
             assert.throws(() => {
                 set.insertAfter(null, item);
             }, /null or undefined/);
         });
+    });
+
+    describe("findNext()", () => {
+
+        beforeEach(() => {
+            set.add(1);
+            set.add(2);
+            set.add(3);
+        });
+
+        it("should throw an error when the second argument is missing", () => {
+            assert.throws(() => {
+                set.findNext(value => value > 1);
+            }, /does not exist/);
+        });
+
+        it("should throw an error when the second argument is not in the set", () => {
+            assert.throws(() => {
+                set.findNext(value => value > 1, 5);
+            }, /does not exist/);
+        });
+
+        it("should find the next matching item when start is set", () => { 
+            const result = set.findNext(value => value > 1, 2);
+
+            assert.strictEqual(result, 3);
+        });
+
+        it("should return undefined when the value isn't found", () => { 
+            const result = set.findNext(value => value > 4, 1);
+
+            assert.isUndefined(result);
+        });
+
+    });
+
+    describe("findPrevious()", () => {
+
+        beforeEach(() => {
+            set.add(1);
+            set.add(2);
+            set.add(3);
+            set.add(4);
+            set.add(5);
+        });
+
+        it("should throw an error when the second argument is missing", () => { 
+            assert.throws(() => {
+                set.findPrevious(value => value > 1);
+            }, /does not exist/);
+        });
+
+        it("should throw an error when the second argument is not in the set", () => { 
+            assert.throws(() => {
+                set.findPrevious(value => value > 1, 10);
+            }, /does not exist/);
+        });
+
+        it("should find the next matching item when start is set", () => { 
+            const result = set.findPrevious(value => value < 3, 5);
+            assert.strictEqual(result, 2);
+        });
+
+        it("should return undefined when the value isn't found", () => { 
+            const result = set.findPrevious(value => value > 4, 3);
+            assert.isUndefined(result);
+        });
+
     });
 
 });
