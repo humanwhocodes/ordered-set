@@ -2,12 +2,29 @@
   "name": "@humanwhocodes/ordered-set",
   "version": "0.1.0",
   "description": "A set whose items can be traversed in order",
-  "main": "src/index.js",
+  "main": "src/ordered-set.js",
   "scripts": {
     "lint": "eslint src/ tests/",
     "test": "npm run lint && nyc --include src/** mocha tests/"
   },
-  "keywords": [],
+  "files": [
+    "src/ordered-set.js"
+  ],
+  "keywords": [
+    "data structure",
+    "set",
+    "linked list",
+    "doubly linked list"
+  ],
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/humanwhocodes/ordered-set.git"
+    },
+    "bugs": {
+      "url": "https://github.com/humanwhocodes/ordered-set/issues"
+    },
+    "homepage": "https://github.com/humanwhocodes/ordered-set#readme",
+    
   "author": "nzakas",
   "license": "Apache-2.0",
   "devDependencies": {

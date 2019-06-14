@@ -352,4 +352,4 @@ class OrderedSet {
 
 }
 
-module.exports = OrderedSet;
+exports.OrderedSet = OrderedSet;

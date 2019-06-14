@@ -1,5 +1,5 @@
 /**
- * @fileoverview Tests for OrderedWeakSet.
+ * @fileoverview Tests for OrderedSet.
  * @author Nicholas C. Zakas
  */
 
@@ -9,7 +9,7 @@
 // Requirements
 //-----------------------------------------------------------------------------
 
-const OrderedSet = require("../src/index.js");
+const { OrderedSet } = require("../src/ordered-set");
 const assert = require("chai").assert;
 
 //-----------------------------------------------------------------------------
