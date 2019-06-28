@@ -57,7 +57,7 @@ const last = set.last();
 const value1 = set.findNext(value => value > 1, 1);
 
 // find the previous value matching this function
-const value2 = set.findNext(value => value > 1, 3);
+const value2 = set.findPrevious(value => value > 1, 3);
 
 // remove a value
 set.delete(1);
