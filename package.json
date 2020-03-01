@@ -1,6 +1,6 @@
 {
   "name": "@humanwhocodes/ordered-set",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A set whose items can be traversed in order",
   "main": "src/ordered-set.js",
   "scripts": {
